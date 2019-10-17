@@ -1,0 +1,51 @@
+<p>time works!</p>
+
+<h1>Date and time</h1>
+<div>
+  <h2>Row Data</h2>
+  <h4>{{nowTime}}</h4>
+  <h4>{{nowDate}}</h4>
+  <h4>{{now }}</h4>
+</div>
+
+
+<div>
+  <h2>Data with date pipe</h2>
+  <p>format of Data Pipe value_expression | date [ : format [ : timezone [ : locale ] ] ] </p>
+  <p>
+    Examples are given in en-US locale.
+  </p>
+  <p>'short': equivalent to 'M/d/yy, h:mm a' (6/15/15, 9:03 AM).</p>
+  {{now | date :'short'}}
+  <p>'medium': equivalent to 'MMM d, y, h:mm:ss a' (Jun 15, 2015, 9:03:01 AM).</p>
+  {{now | date :'medium'}}
+  <p>'long': equivalent to 'MMMM d, y, h:mm:ss a z' (June 15, 2015 at 9:03:01 AM GMT+1).</p>
+  {{now | date :'long'}}
+  <p>'full': equivalent to 'EEEE, MMMM d, y, h:mm:ss a zzzz' (Monday, June 15, 2015 at 9:03:01 AM GMT+01:00).</p>
+  {{now | date :'full'}}
+  <p>'shortDate': equivalent to 'M/d/yy' (6/15/15).</p>
+  {{now | date :'shortDate'}}
+  <p>'mediumDate': equivalent to 'MMM d, y' (Jun 15, 2015).</p>
+  {{now | date :'mediumDate'}}
+  <p>'longDate': equivalent to 'MMMM d, y' (June 15, 2015).</p>
+  {{now | date :'longDate'}}
+  <p>'fullDate': equivalent to 'EEEE, MMMM d, y' (Monday, June 15, 2015).</p>
+  {{now | date :'fullDate'}}
+  <p>'shortTime': equivalent to 'h:mm a' (9:03 AM).</p>
+  {{now | date :'shortTime'}}
+  <p>'mediumTime': equivalent to 'h:mm:ss a' (9:03:01 AM).</p>
+  {{now | date :'mediumTime'}}
+  <p>'longTime': equivalent to 'h:mm:ss a z' (9:03:01 AM GMT+1).</p>
+  {{now | date :'longTime'}}
+  <p>'fullTime': equivalent to 'h:mm:ss a zzzz' (9:03:01 AM GMT+01:00).</p>
+  {{now | date :'fullTime'}}
+  <p>hh:mm a +8 ko</p>
+  {{now | date :'hh:mm a':'+8':'ko'}}
+
+  <h4>{{nowTime | date}}</h4>
+  <h4>{{nowDate | date}}</h4>
+
+</div>
+
+
+
