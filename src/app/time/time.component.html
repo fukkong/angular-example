@@ -1,5 +1,3 @@
-<p>time works!</p>
-
 <h1>Date and time</h1>
 <div>
   <h2>Row Data</h2>
@@ -8,7 +6,6 @@
   <h4>{{now }}</h4>
 </div>
 
-
 <div>
   <h2>Data with date pipe</h2>
   <p>format of Data Pipe value_expression | date [ : format [ : timezone [ : locale ] ] ] </p>
@@ -16,36 +13,29 @@
     Examples are given in en-US locale.
   </p>
   <p>'short': equivalent to 'M/d/yy, h:mm a' (6/15/15, 9:03 AM).</p>
-  {{now | date :'short'}}
+  {{now | date :'short':"":'ko'}}
   <p>'medium': equivalent to 'MMM d, y, h:mm:ss a' (Jun 15, 2015, 9:03:01 AM).</p>
-  {{now | date :'medium'}}
+  {{now | date :'medium': '':'ko'}}
   <p>'long': equivalent to 'MMMM d, y, h:mm:ss a z' (June 15, 2015 at 9:03:01 AM GMT+1).</p>
-  {{now | date :'long'}}
+  {{now | date :'long': '':'ko'}}
   <p>'full': equivalent to 'EEEE, MMMM d, y, h:mm:ss a zzzz' (Monday, June 15, 2015 at 9:03:01 AM GMT+01:00).</p>
-  {{now | date :'full'}}
+  {{now | date :'full': '':'ko'}}
   <p>'shortDate': equivalent to 'M/d/yy' (6/15/15).</p>
-  {{now | date :'shortDate'}}
+  {{now | date :'shortDate': '':'ko'}}
   <p>'mediumDate': equivalent to 'MMM d, y' (Jun 15, 2015).</p>
-  {{now | date :'mediumDate'}}
+  {{now | date :'mediumDate': '':'ko'}}
   <p>'longDate': equivalent to 'MMMM d, y' (June 15, 2015).</p>
-  {{now | date :'longDate'}}
+  {{now | date :'longDate': '':'ko'}}
   <p>'fullDate': equivalent to 'EEEE, MMMM d, y' (Monday, June 15, 2015).</p>
-  {{now | date :'fullDate'}}
+  {{now | date :'fullDate': '':'ko'}}
   <p>'shortTime': equivalent to 'h:mm a' (9:03 AM).</p>
-  {{now | date :'shortTime'}}
+  {{now | date :'shor tTime': '':'ko'}}
   <p>'mediumTime': equivalent to 'h:mm:ss a' (9:03:01 AM).</p>
-  {{now | date :'mediumTime'}}
+  {{now | date :'mediumTime': '+9':'ko'}}
   <p>'longTime': equivalent to 'h:mm:ss a z' (9:03:01 AM GMT+1).</p>
-  {{now | date :'longTime'}}
+  {{now | date :'longTime' : '':'ko'}}
   <p>'fullTime': equivalent to 'h:mm:ss a zzzz' (9:03:01 AM GMT+01:00).</p>
-  {{now | date :'fullTime'}}
+  {{now | date :'fullTime' : '+9': 'ko'}}
   <p>hh:mm a +8 ko</p>
-  {{now | date :'hh:mm a':'+8':'ko'}}
-
-  <h4>{{nowTime | date}}</h4>
-  <h4>{{nowDate | date}}</h4>
-
+  {{now | date :'a hh:mm':'':'ko'}}
 </div>
-
-
-
