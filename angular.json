@@ -57,6 +57,12 @@
                   "maximumError": "10kb"
                 }
               ]
+            },
+            "ko": {
+              "aot": true,
+              "outputPath": "dist/localization-template-ko-ko",
+              "i18nFile": "src/locale/messages.ko.xlf",
+              "i18nLocale": "ko"
             }
           }
         },
@@ -68,6 +74,9 @@
           "configurations": {
             "production": {
               "browserTarget": "localization-template-ko:build:production"
+            },
+            "ko": {
+              "browserTarget": "localization-template-ko:build:ko"
             }
           }
         },
@@ -120,6 +129,7 @@
           }
         }
       }
-    }},
+    }
+  },
   "defaultProject": "localization-template-ko"
 }
