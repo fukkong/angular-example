@@ -17,7 +17,16 @@ noData(Highcharts);
 })
 
 export class HighchartComponent implements OnInit {
-  public options: any = {
+  constructor(private http: HttpClient) {
+  }
+
+  ngOnInit() {
+    drawPeriodChart('container');
+  }
+}
+
+function setBloodPressureOption(bpData: any) {
+  const options: any = {
     title: {
       text: 'Blood Pressure chart'
     },
@@ -84,45 +93,46 @@ export class HighchartComponent implements OnInit {
       zIndex: 0,
       opacity: 0.8,
       data: []
-    }
-    ]
+    }]
   };
 
-  constructor(private http: HttpClient) {
-  }
+  const updatedSystolic = [];
+  const updatedAverage = [];
+  const updatedRate = [];
 
-  ngOnInit() {
+  bpData.forEach(data => {
+    const time = new Date(data.date).getTime();
+    const tempSystolic = [
+      time, data.diastolic, data.systolic
+    ];
+    const tempAverage = [
+      time, data.mean
+    ];
+    const tempRate = [
+      time, data.rate
+    ];
+    updatedSystolic.push(tempSystolic);
+    updatedAverage.push(tempAverage);
+    updatedRate.push(tempRate);
+  });
 
-    const updatedSystolic = [];
-    const updatedAverage = [];
-    const updatedRate = [];
+  options.series[0].data = updatedSystolic;
+  options.series[1].data = updatedAverage;
+  options.series[2].data = updatedRate;
 
-    bpdata.forEach(data => {
-      const time = new Date(data.date).getTime();
-      const tempSystolic = [
-        time, data.diastolic, data.systolic
-      ];
-      const tempAverage = [
-        time, data.mean
-      ];
-      const tempRate = [
-        time, data.rate
-      ];
-      updatedSystolic.push(tempSystolic);
-      updatedAverage.push(tempAverage);
-      updatedRate.push(tempRate);
-    });
-
-    this.options.series[0]['data'] = updatedSystolic;
-    this.options.series[1]['data'] = updatedAverage;
-    this.options.series[2]['data'] = updatedRate;
-
-    Highcharts.chart('container', this.options);
-
-  }
+  return options;
 }
 
-const bpdata = [
+function drawPeriodChart(canvas: string, start?: Date, end?: Date) {
+  // data query with start and end
+  const bpData = bloodPressureData; // temporary set data as bloodPressureData
+  // set option
+  const option = setBloodPressureOption(bpData);
+  // draw chart
+  Highcharts.chart(canvas, option);
+}
+
+const bloodPressureData = [
   {
     'date': '2019-10-25T04:10:51.530Z',
     'systolic': 100,
