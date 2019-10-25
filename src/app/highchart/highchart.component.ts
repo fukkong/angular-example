@@ -53,23 +53,51 @@ export class HighchartComponent implements OnInit {
         text: '시간'
       }
     },
+    yAxis: [{
+      labels: {
+        format: '{value}mmHg',
+        style: {
+          color: Highcharts.getOptions().colors[3]
+        }
+      }
+    }, {
+      gridLineWidth: 1,
+      title: {
+        text: '맥박',
+      },
+      labels: {
+        format: '{value}회/분',
+        align: 'right',
+      }
+    }],
     plotOptions: {
       series: {
         marker: {
           enabled: true
-        }
+        },
+        pointWidth: 30
       }
     },
     series: [{
       name: '수축기',
+      type: 'arearange',
+      lineWidth: 1,
+      fillOpacity: 0.3,
+      zIndex: 0,
+      color: Highcharts.getOptions().colors[3],
       data: []
     }, {
-        name: '이완기',
-        data: []
-      }, {
-        name: 'rate',
-        data: []
-      }
+      name: '평균 혈압',
+      zIndex: 1,
+      data: [],
+    }, {
+      name: '심박수',
+      type: 'column',
+      yAxis: 1,
+      zIndex: 0,
+      opacity: 0.8,
+      data: []
+    }
     ]
   };
   subscription: Subscription;
@@ -80,29 +108,28 @@ export class HighchartComponent implements OnInit {
   ngOnInit() {
     const source = interval(10000);
     const updatedSystolic = [];
-    const updatedDiastolic = [];
+    const updatedAverage = [];
     const updatedRate = [];
 
     bpdata.forEach(row => {
       const time = new Date(row.date).getTime();
       console.log(moment(time).startOf('hour'));
       const tempSystolic = [
-        time,
-        row.systolic
+        time, row.diastolic, row.systolic
       ];
-      const tempDiastolic = [
-        time, row.diastolic
+      const tempAverage = [
+        time, row.mean
       ];
       const tempRate = [
         time, row.rate
       ];
       updatedSystolic.push(tempSystolic);
-      updatedDiastolic.push(tempDiastolic);
+      updatedAverage.push(tempAverage);
       updatedRate.push(tempRate);
     });
 
     this.options.series[0]['data'] = updatedSystolic;
-    this.options.series[1]['data'] = updatedDiastolic;
+    this.options.series[1]['data'] = updatedAverage;
     this.options.series[2]['data'] = updatedRate;
 
     Highcharts.chart('container', this.options);
@@ -127,7 +154,7 @@ const bpdata = [
     'rate': 120
   },
   {
-    'date': '2019-10-25T05:10:51.530Z',
+    'date': '2019-10-25T04:18:51.530Z',
     'systolic': 110,
     'diastolic': 52,
     'mean': 95,
