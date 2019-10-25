@@ -14,7 +14,6 @@ export class TimeComponent implements OnInit {
   constructor() {
     this.nowDate = moment(new Date()).format('YYYY.MM.DD');
     this.nowTime = moment(new Date()).format('LT');
-    console.log(this.now);
   }
 
   ngOnInit() {
