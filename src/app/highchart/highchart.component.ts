@@ -1,9 +1,9 @@
 import {Component, OnInit} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
 import * as Highcharts from 'highcharts';
 import Boost from 'highcharts/modules/boost';
 import noData from 'highcharts/modules/no-data-to-display';
 import More from 'highcharts/highcharts-more';
+import * as moment from 'moment';
 
 Boost(Highcharts);
 noData(Highcharts);
@@ -17,15 +17,17 @@ noData(Highcharts);
 })
 
 export class HighchartComponent implements OnInit {
-  constructor(private http: HttpClient) {
+  constructor() {
   }
 
   ngOnInit() {
-    drawPeriodChart('container');
+    const start = moment().startOf('day').toDate();
+    const end = moment().endOf('day').toDate();
+    drawPeriodChart('container', start, end);
   }
 }
 
-function setBloodPressureOption(bpData: any) {
+function setBloodPressureOption(bpData: any, start?: Date, end?: Date) {
   const options: any = {
     title: {
       text: 'Blood Pressure chart'
@@ -42,8 +44,6 @@ function setBloodPressureOption(bpData: any) {
     xAxis: {
       type: 'datetime',
       gridLineWidth: 1,
-      startOnTick: true,
-      endOnTick: true,
       title: {
         text: '시간'
       }
@@ -96,6 +96,13 @@ function setBloodPressureOption(bpData: any) {
     }]
   };
 
+  if (start) {
+    options.xAxis.min = start.getTime();
+  }
+  if (end) {
+    options.xAxis.max = end.getTime();
+  }
+
   const updatedSystolic = [];
   const updatedAverage = [];
   const updatedRate = [];
@@ -127,7 +134,7 @@ function drawPeriodChart(canvas: string, start?: Date, end?: Date) {
   // data query with start and end
   const bpData = bloodPressureData; // temporary set data as bloodPressureData
   // set option
-  const option = setBloodPressureOption(bpData);
+  const option = setBloodPressureOption(bpData, start, end);
   // draw chart
   Highcharts.chart(canvas, option);
 }
