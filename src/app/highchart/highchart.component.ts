@@ -1,20 +1,9 @@
 import {Component, OnInit} from '@angular/core';
-import * as Highcharts from 'highcharts';
 import {HttpClient} from '@angular/common/http';
-import {interval, Subscription} from 'rxjs';
-import * as moment from 'moment';
-
-declare var require: any;
-
-declare module 'highcharts' {
-  interface Point {
-    highlight: (event: Highcharts.PointEventsOptionsObject) => void
-  }
-}
-
-const Boost = require('highcharts/modules/boost');
-const noData = require('highcharts/modules/no-data-to-display');
-const More = require('highcharts/highcharts-more');
+import * as Highcharts from 'highcharts';
+import Boost from 'highcharts/modules/boost';
+import noData from 'highcharts/modules/no-data-to-display';
+import More from 'highcharts/highcharts-more';
 
 Boost(Highcharts);
 noData(Highcharts);
@@ -26,11 +15,9 @@ noData(Highcharts);
   templateUrl: './highchart.component.html',
   styleUrls: ['./highchart.component.css']
 })
+
 export class HighchartComponent implements OnInit {
   public options: any = {
-    chart: {
-      tyep: 'line',
-    },
     title: {
       text: 'Blood Pressure chart'
     },
@@ -38,8 +25,7 @@ export class HighchartComponent implements OnInit {
       enabled: false
     },
     tooltip: {
-      shared: true,
-      crosshairs: true
+      shared: true
     },
     time: {
       timezone: 'Asia/Seoul'
@@ -62,12 +48,13 @@ export class HighchartComponent implements OnInit {
       }
     }, {
       gridLineWidth: 1,
+      opposite: true,
       title: {
         text: '맥박',
       },
       labels: {
         format: '{value}회/분',
-        align: 'right',
+        align: 'left',
       }
     }],
     plotOptions: {
@@ -100,28 +87,26 @@ export class HighchartComponent implements OnInit {
     }
     ]
   };
-  subscription: Subscription;
 
   constructor(private http: HttpClient) {
   }
 
   ngOnInit() {
-    const source = interval(10000);
+
     const updatedSystolic = [];
     const updatedAverage = [];
     const updatedRate = [];
 
-    bpdata.forEach(row => {
-      const time = new Date(row.date).getTime();
-      console.log(moment(time).startOf('hour'));
+    bpdata.forEach(data => {
+      const time = new Date(data.date).getTime();
       const tempSystolic = [
-        time, row.diastolic, row.systolic
+        time, data.diastolic, data.systolic
       ];
       const tempAverage = [
-        time, row.mean
+        time, data.mean
       ];
       const tempRate = [
-        time, row.rate
+        time, data.rate
       ];
       updatedSystolic.push(tempSystolic);
       updatedAverage.push(tempAverage);
@@ -135,23 +120,15 @@ export class HighchartComponent implements OnInit {
     Highcharts.chart('container', this.options);
 
   }
-
-  getApiResponse(url) {
-    return this.http.get(url, {}).toPromise()
-      .then(res => {
-        return res;
-      });
-  }
 }
-
 
 const bpdata = [
   {
     'date': '2019-10-25T04:10:51.530Z',
     'systolic': 100,
     'diastolic': 80,
-    'mean': 95,
-    'rate': 120
+    'mean': 60,
+    'rate': 80
   },
   {
     'date': '2019-10-25T04:18:51.530Z',
