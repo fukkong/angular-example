@@ -5,11 +5,15 @@ import noData from 'highcharts/modules/no-data-to-display';
 import More from 'highcharts/highcharts-more';
 import xrange from 'highcharts/modules/xrange';
 import * as moment from 'moment';
+import MomentTimeZone from 'moment-timezone';
 
 Boost(Highcharts);
 noData(Highcharts);
 More(Highcharts);
 xrange(Highcharts);
+
+window['moment'] = moment;
+MomentTimeZone();
 
 @Component({
   selector: 'app-highchart',
@@ -22,10 +26,25 @@ export class HighchartComponent implements OnInit {
   }
 
   ngOnInit() {
+    Highcharts.setOptions({
+      lang: {
+        months: [
+          '1', '2', '3', '4',
+          '5', '6', '7', '8',
+          '9', '10', '11', '12'
+        ],
+        weekdays: [
+          '일', '월', '화', '수', '목', '금', '토'
+        ],
+        shortMonths: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12']
+      }
+    });
+
     const start = moment().startOf('day').toDate();
     const end = moment().endOf('day').toDate();
     drawPeriodChart('container');
     drawSleepChart('sleepLog');
+    drawHeartRateChart('heartRate');
   }
 }
 
@@ -51,6 +70,10 @@ function setBloodPressureOption(bpData: any, start?: Date, end?: Date) {
       }
     },
     yAxis: [{
+      min: 60,
+      max: 220,
+      startOnTick: false,
+      endOnTick: false,
       labels: {
         format: '{value}mmHg',
         style: {
@@ -132,6 +155,46 @@ function setBloodPressureOption(bpData: any, start?: Date, end?: Date) {
   return options;
 }
 
+async function setHeartRateChartOption(heartRateData: any) {
+  const options: any = {
+    title: {
+      text: 'Heart Rate Chart'
+    },
+    time: {
+      timezone: 'Asia/Seoul'
+    },
+    xAxis: {
+      type: 'datetime',
+      gridLineWidth: 1,
+    },
+    yAxis: {
+      labels: {
+        format: '{value}bpm',
+      }
+    },
+    plotOptions: {},
+    series: [{
+      name: '심박수',
+      type: 'spline',
+      color: Highcharts.getOptions().colors[0],
+      data: []
+    }]
+  };
+
+  heartRateData.forEach(data => {
+    const time = new Date(data.date).getTime();
+    options.series[0].data.push([time, data.rate]);
+  });
+
+  const startOfDay = moment(heartRateData[0].date).startOf('day').toDate()
+  const endOfDay = moment(heartRateData[heartRateData.length - 1].date).endOf('day').toDate()
+
+  options.xAxis.min = startOfDay.getTime();
+  options.xAxis.max = endOfDay.getTime();
+
+  return options;
+}
+
 function drawPeriodChart(canvas: string, start?: Date, end?: Date) {
   // data query with start and end
   const bpData = bloodPressureData; // temporary set data as bloodPressureData
@@ -150,6 +213,11 @@ async function drawSleepChart(canvas: string, date?: Date) {
   });
 }
 
+async function drawHeartRateChart(canvas: string) {
+  const option = await setHeartRateChartOption(bloodPressureData);
+  await Highcharts.chart(canvas, option);
+}
+
 async function setSleepSegmentOption(sleepData: any) {
   const option: any = {
     chart: {
@@ -162,7 +230,14 @@ async function setSleepSegmentOption(sleepData: any) {
       timezone: 'Asia/Seoul'
     },
     xAxis: {
-      type: 'datetime'
+      type: 'datetime',
+      dateTimeLabelFormats: {
+        minute: '%H시:%M분',
+        hour: '%H시:%M분',
+        day: '%b월 %e일',
+        week: '%b월 %e일',
+        month: '%y년 %b월'
+      }
     },
     yAxis: {
       categories: ['수면패턴'],
@@ -175,6 +250,7 @@ async function setSleepSegmentOption(sleepData: any) {
         borderRadius: 0,
         pointPadding: 0,
         groupPadding: 0,
+        colorByPoint: false,
         dataLabels: {
           enabled: true
         }
@@ -188,15 +264,18 @@ async function setSleepSegmentOption(sleepData: any) {
     series: [
       {
         name: '안 잠',
-        data: []
+        data: [],
+        color: '#BCC5FA'
       },
       {
         name: '얕은잠',
-        data: []
+        data: [],
+        color: '#00FF00'
       },
       {
         name: '깊은잠',
-        data: []
+        data: [],
+        color: '#0000FF'
       }]
   };
 
@@ -245,24 +324,21 @@ async function makeSleepData(index: number, startTime: number, endTime: number, 
       notInSleep.push({
         x: startTime,
         x2: endTime,
-        y: 0,
-        color: '#e5e9fd',
+        y: 0
       });
       break;
     case 2:
       shallowSleep.push({
         x: startTime,
         x2: endTime,
-        y: 0,
-        color: '#bcc5fa',
+        y: 0
       });
       break;
     case 3:
       deepSleep.push({
         x: startTime,
         x2: endTime,
-        y: 0,
-        color: '#8191f5'
+        y: 0
       });
       break;
   }
@@ -273,27 +349,27 @@ const bloodPressureData = [
     'date': '2019-10-25T04:10:51.530Z',
     'systolic': 100,
     'diastolic': 80,
-    'mean': 60,
+    'mean': 80,
     'rate': 80
   },
   {
     'date': '2019-10-25T04:18:51.530Z',
     'systolic': 110,
-    'diastolic': 52,
+    'diastolic': 62,
     'mean': 95,
     'rate': 120
   },
   {
     'date': '2019-10-25T06:10:51.530Z',
     'systolic': 110,
-    'diastolic': 55,
+    'diastolic': 65,
     'mean': 95,
     'rate': 120
   },
   {
     'date': '2019-10-25T07:10:51.530Z',
     'systolic': 110,
-    'diastolic': 50,
+    'diastolic': 70,
     'mean': 95,
     'rate': 120
   },
@@ -376,6 +452,10 @@ const sleepSegment = [
   },
   {
     'date': '2019-10-25T18:25:51.530Z',
+    'sleepIndex': 1
+  },
+  {
+    'date': '2019-10-26T18:25:51.530Z',
     'sleepIndex': 1
   }
 ];
