@@ -19,6 +19,7 @@
     "@angular/platform-browser": "~8.2.9",
     "@angular/platform-browser-dynamic": "~8.2.9",
     "@angular/router": "~8.2.9",
+    "firebase": "^7.5.0",
     "highcharts": "^7.2.0",
     "moment": "^2.24.0",
     "moment-timezone": "^0.5.27",

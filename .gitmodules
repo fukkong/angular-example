@@ -1,0 +1,6 @@
+[submodule "AutochekChart"]
+	path = AutochekChart
+	url = https://github.com/navelist89/AutochekChart.git
+[submodule "AutochekCommon"]
+	path = AutochekCommon
+	url = https://github.com/navelist89/AutochekCommon.git
