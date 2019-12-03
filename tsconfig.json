@@ -6,7 +6,7 @@
         "./AutochekCommon/*"
       ],
       "@AutochekChart": [
-        "AutochekChart/"
+        "./AutochekChart/"
       ]
     },
     "baseUrl": "./",

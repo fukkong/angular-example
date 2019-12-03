@@ -6,6 +6,8 @@ import More from 'highcharts/highcharts-more';
 import xrange from 'highcharts/modules/xrange';
 import * as moment from 'moment';
 import MomentTimeZone from 'moment-timezone';
+import {drawSleepChart} from '../../../AutochekChart/sleep-segment-chart';
+import {PedometerSleepSegment} from '@AutochekCommon/vanilla/objects/device-data-object';
 
 Boost(Highcharts);
 noData(Highcharts);
@@ -43,9 +45,24 @@ export class HighchartComponent implements OnInit {
     const start = moment().startOf('day').toDate();
     const end = moment().endOf('day').toDate();
     drawPeriodChart('container');
-    drawSleepChart('sleepLog');
+    const testCase = makeTestCase();
+    drawSleepChart('sleepLog', testCase);
     drawHeartRateChart('heartRate');
   }
+}
+
+function makeTestCase() {
+  const startTime = moment().startOf('day');
+  const addTime = Math.floor(Math.random() * 3 + 5);
+  const rtnPedometerList: PedometerSleepSegment[] = [];
+  let tempTime: Date = moment().startOf('day').toDate();
+  for (let i = 0; i < addTime * 6; i++) {
+    tempTime = new Date(moment(tempTime).add(10, 'minute').toDate());
+    const tempSleepIndex = Math.floor(Math.random() * 3);
+    const tempPedometer = new PedometerSleepSegment(tempTime, tempSleepIndex);
+    rtnPedometerList.push(tempPedometer);
+  }
+  return rtnPedometerList;
 }
 
 function setBloodPressureOption(bpData: any, start?: Date, end?: Date) {
@@ -204,145 +221,16 @@ function drawPeriodChart(canvas: string, start?: Date, end?: Date) {
   Highcharts.chart(canvas, option);
 }
 
-async function drawSleepChart(canvas: string, date?: Date) {
-  // data query with date
-  const slData = sleepSegment;
-  // set option
-  await setSleepSegmentOption(slData).then(option => {
-    Highcharts.chart(canvas, option);
-  });
-}
+
 
 async function drawHeartRateChart(canvas: string) {
   const option = await setHeartRateChartOption(bloodPressureData);
   await Highcharts.chart(canvas, option);
 }
 
-async function setSleepSegmentOption(sleepData: any) {
-  const option: any = {
-    chart: {
-      type: 'xrange'
-    },
-    title: {
-      text: '수면 패턴 기록'
-    },
-    time: {
-      timezone: 'Asia/Seoul'
-    },
-    xAxis: {
-      type: 'datetime',
-      dateTimeLabelFormats: {
-        minute: '%H시:%M분',
-        hour: '%H시:%M분',
-        day: '%b월 %e일',
-        week: '%b월 %e일',
-        month: '%y년 %b월'
-      }
-    },
-    yAxis: {
-      categories: ['수면패턴'],
-      reversed: true,
-      visible: false
-    },
-    plotOptions: {
-      xrange: {
-        grouping: false,
-        borderRadius: 0,
-        pointPadding: 0,
-        groupPadding: 0,
-        colorByPoint: false,
-        dataLabels: {
-          enabled: true
-        }
-      },
-      series: {
-        marker: {
-          enabled: true
-        }
-      }
-    },
-    series: [
-      {
-        name: '안 잠',
-        data: [],
-        color: '#BCC5FA'
-      },
-      {
-        name: '얕은잠',
-        data: [],
-        color: '#00FF00'
-      },
-      {
-        name: '깊은잠',
-        data: [],
-        color: '#0000FF'
-      }]
-  };
 
-  let flag: number = sleepData[0].sleepIndex;
-  let startTime = new Date(sleepData[0].date).getTime();
-  let endTime;
 
-  const notInSleep = [];
-  const shallowSleep = [];
-  const deepSleep = [];
-  for (let i = 1; i < sleepData.length; i++) {
-    const bool = sleepData[i].sleepIndex !== flag;
-    if (i !== (sleepData.length - 1)) {
-      if (bool) {
-        endTime = new Date(sleepData[i].date).getTime();
-        makeSleepData(flag, startTime, endTime, notInSleep, shallowSleep, deepSleep);
 
-        startTime = new Date(sleepData[i].date).getTime();
-        flag = sleepData[i].sleepIndex;
-      }
-    } else {
-      if (!bool) {
-        endTime = new Date(sleepData[i].date).getTime() + 300 * 1000;
-        await makeSleepData(flag, startTime, endTime, notInSleep, shallowSleep, deepSleep);
-      } else {
-        endTime = new Date(sleepData[i].date).getTime();
-        await makeSleepData(flag, startTime, endTime, notInSleep, shallowSleep, deepSleep);
-        startTime = endTime;
-        endTime = new Date(sleepData[i].date).getTime() + 300 * 1000;
-        flag = sleepData[i].sleepIndex;
-        await makeSleepData(flag, startTime, endTime, notInSleep, shallowSleep, deepSleep);
-      }
-    }
-  }
-
-  option.series[0].data = notInSleep;
-  option.series[1].data = shallowSleep;
-  option.series[2].data = deepSleep;
-
-  return option;
-}
-
-async function makeSleepData(index: number, startTime: number, endTime: number, notInSleep, shallowSleep, deepSleep) {
-  switch (index) {
-    case 1:
-      notInSleep.push({
-        x: startTime,
-        x2: endTime,
-        y: 0
-      });
-      break;
-    case 2:
-      shallowSleep.push({
-        x: startTime,
-        x2: endTime,
-        y: 0
-      });
-      break;
-    case 3:
-      deepSleep.push({
-        x: startTime,
-        x2: endTime,
-        y: 0
-      });
-      break;
-  }
-}
 
 const bloodPressureData = [
   {
@@ -408,54 +296,4 @@ const bloodPressureData = [
     'mean': 95,
     'rate': 120
   },
-];
-const sleepSegment = [
-  {
-    'date': '2019-10-25T12:15:51.530Z',
-    'sleepIndex': 1
-  },
-  {
-    'date': '2019-10-25T13:15:51.530Z',
-    'sleepIndex': 2
-  },
-  {
-    'date': '2019-10-25T14:10:51.530Z',
-    'sleepIndex': 2
-  },
-  {
-    'date': '2019-10-25T14:20:51.530Z',
-    'sleepIndex': 3
-  },
-  {
-    'date': '2019-10-25T14:30:51.530Z',
-    'sleepIndex': 2
-  },
-  {
-    'date': '2019-10-25T14:50:51.530Z',
-    'sleepIndex': 1
-  },
-  {
-    'date': '2019-10-25T15:15:51.530Z',
-    'sleepIndex': 2
-  },
-  {
-    'date': '2019-10-25T17:15:51.530Z',
-    'sleepIndex': 1
-  },
-  {
-    'date': '2019-10-25T17:45:51.530Z',
-    'sleepIndex': 3
-  },
-  {
-    'date': '2019-10-25T18:15:51.530Z',
-    'sleepIndex': 2
-  },
-  {
-    'date': '2019-10-25T18:25:51.530Z',
-    'sleepIndex': 1
-  },
-  {
-    'date': '2019-10-26T18:25:51.530Z',
-    'sleepIndex': 1
-  }
 ];
