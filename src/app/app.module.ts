@@ -8,6 +8,7 @@ import {AppComponent} from './app.component';
 import {TimeComponent} from './time/time.component';
 import { HighchartComponent } from './highchart/highchart.component';
 import {HttpClientModule} from '@angular/common/http';
+import { ChartPedometerComponent } from './chart-pedometer/chart-pedometer.component';
 
 registerLocaleData(localeKo, 'ko');
 
@@ -15,7 +16,8 @@ registerLocaleData(localeKo, 'ko');
   declarations: [
     AppComponent,
     TimeComponent,
-    HighchartComponent
+    HighchartComponent,
+    ChartPedometerComponent
   ],
   imports: [
     BrowserModule,
