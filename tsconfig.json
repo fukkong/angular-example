@@ -3,10 +3,10 @@
   "compilerOptions": {
     "paths":{
       "@AutochekCommon/*": [
-        "./AutochekCommon/*"
+        "AutochekCommon/*"
       ],
-      "@AutochekChart": [
-        "./AutochekChart/"
+      "@AutochekChart/*": [
+        "AutochekChart/*"
       ]
     },
     "baseUrl": "./",
